@@ -10473,7 +10473,7 @@ public class HelloWorld
         .append(""]""));
     builder.append(""]"");
     return builder.toString();
-  }",,
+  }",0,
 "public void createKingdom(final KingdomFactory factory) {
     setKing(factory.createKing());
     setCastle(factory.createCastle());
@@ -10621,4 +10621,150 @@ public class HelloWorld
     assertThat(logger.getLoggingEvents())
         .extracting(""level"", ""message"")
         .contains(tuple(INFO, hayes + "" used with Dos configurator.""));
+  }",0,
+"public void testVisitForZoom() {
+    var conUnix = new ConfigureForUnixVisitor();
+    var zoom = new Zoom();
+    
+    conUnix.visit(zoom);
+    
+    assertThat(LOGGER.getLoggingEvents())
+        .extracting(""level"", ""message"")
+        .contains(tuple(INFO, zoom + "" used with Unix configurator.""));
+  }",0,
+"public void clearLoggers() {
+    TestLoggerFactory.clear();
+  }",0,
+"public void testAcceptForDos() {  
+    var hayes = new Hayes();
+    var mockVisitor = mock(ConfigureForDosVisitor.class);
+    
+    hayes.accept(mockVisitor);
+    verify((HayesVisitor)mockVisitor).visit(eq(hayes));
+  }",0,
+"public void testAcceptForUnix() {    
+    var hayes = new Hayes();
+    var mockVisitor = mock(ConfigureForUnixVisitor.class);
+    
+    hayes.accept(mockVisitor);
+    
+    verifyZeroInteractions(mockVisitor);
+  }",0,
+"public void testAcceptForDos() {  
+    var zoom = new Zoom();
+    var mockVisitor = mock(ConfigureForDosVisitor.class);
+    
+    zoom.accept(mockVisitor);
+    verify((ZoomVisitor)mockVisitor).visit(eq(zoom));
+  }",0,
+"public void testAcceptForUnix() {
+    var zoom = new Zoom();
+    var mockVisitor = mock(ConfigureForUnixVisitor.class);
+    
+    zoom.accept(mockVisitor);
+    verify((ZoomVisitor)mockVisitor).visit(eq(zoom));
+  }",0,
+"public void setup() {
+    beans = new HashMap<>();
+
+    var fishingBoatAdapter = spy(new FishingBoatAdapter());
+    beans.put(FISHING_BEAN, fishingBoatAdapter);
+
+    var captain = new Captain();
+    captain.setRowingBoat((FishingBoatAdapter) beans.get(FISHING_BEAN));
+    beans.put(ROWING_BEAN, captain);
+  }",0,
+"public void testAdapter() {
+    var captain = (Captain) beans.get(ROWING_BEAN);
+
+    // when captain moves
+    captain.row();
+
+    // the captain internally calls the battleship object to move
+    var adapter = (RowingBoat) beans.get(FISHING_BEAN);
+    verify(adapter).row();
+  }",0,
+"public static void main(final String[] args) {
+    // The captain can only operate rowing boats but with adapter he is able to
+    // use fishing boats as well
+    var captain = new Captain(new FishingBoatAdapter());
+    captain.row();
+  }",0,
+"void sail() {
+    LOGGER.info(""The fishing boat is sailing"");
+  }",0,
+"public Product getProduct() {
+
+    var product = new Product();
+    var productTitle = informationClient.getProductTitle();
+    var productInventory = inventoryClient.getProductInventories();
+
+    //Fallback to error message
+    product.setTitle(requireNonNullElse(productTitle, ""Error: Fetching Product Title Failed""));
+
+    //Fallback to default error inventory
+    product.setProductInventories(requireNonNullElse(productInventory, -1));
+
+    return product;
+  }",0,
+"public String getProductTitle() {
+    var request = HttpRequest.newBuilder()
+        .GET()
+        .uri(URI.create(""http://localhost:51515/information""))
+        .build();
+    var client = HttpClient.newHttpClient();
+    try {
+      var httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
+      return httpResponse.body();
+    } catch (IOException ioe) {
+      LOGGER.error(""IOException Occurred"", ioe);
+    } catch (InterruptedException ie) {
+      LOGGER.error(""InterruptedException Occurred"", ie);
+    }
+    return null;
+  }
+}",0,
+"public Integer getProductInventories() {
+    var response = """";
+
+    var request = HttpRequest.newBuilder()
+        .GET()
+        .uri(URI.create(""http://localhost:51516/inventories""))
+        .build();
+    var client = HttpClient.newHttpClient();
+    try {
+      var httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
+      response = httpResponse.body();
+    } catch (IOException ioe) {
+      LOGGER.error(""IOException Occurred"", ioe);
+    } catch (InterruptedException ie) {
+      LOGGER.error(""InterruptedException Occurred"", ie);
+    }
+    if ("""".equalsIgnoreCase(response)) {
+      return null;
+    } else {
+      return Integer.parseInt(response);
+    }
+  }",0,
+"public void testGetProduct() {
+    var title = ""The Product Title."";
+    var inventories = 5;
+
+    when(informationClient.getProductTitle()).thenReturn(title);
+    when(inventoryClient.getProductInventories()).thenReturn(inventories);
+
+    var testProduct = aggregator.getProduct();
+
+    assertEquals(title, testProduct.getTitle());
+    assertEquals(inventories, testProduct.getProductInventories());
+  }",0,
+"public void shouldGetProductTitle() {
+    var infoController = new InformationController();
+    var title = infoController.getProductTitle();
+    assertEquals(""The Product Title."", title);
+  }",0,
+"public void testGetProductInventories() {
+    var inventoryController = new InventoryController();
+    var numberOfInventories = inventoryController.getProductInventories();
+    assertEquals(5, numberOfInventories);
   }",0,
