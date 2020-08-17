@@ -10446,3 +10446,179 @@ public class HelloWorld
         validateChargeToIncomeAccountMappings(fromApiJsonHelper, baseDataValidator, element);
         validateTaxWithHoldingParams(baseDataValidator, element, false);
     }",1,14666
+"protected AbstractDocument(Map<String, Object> properties) {
+    Objects.requireNonNull(properties, ""properties map is required"");
+    this.properties = properties;
+  }",0,
+"public Void put(String key, Object value) {
+    properties.put(key, value);
+    return null;
+  }",0,
+"public Object get(String key) {
+    return properties.get(key);
+  }",0,
+"public <T> Stream<T> children(String key, Function<Map<String, Object>, T> constructor) {
+    return Stream.ofNullable(get(key))
+        .filter(Objects::nonNull)
+        .map(el -> (List<Map<String, Object>>) el)
+        .findAny()
+        .stream()
+        .flatMap(Collection::stream)
+        .map(constructor);
+  }",0,
+"public String toString() {
+    var builder = new StringBuilder();
+    builder.append(getClass().getName()).append(""["");
+    properties.forEach((key, value) -> builder.append(""["").append(key).append("" : "").append(value)
+        .append(""]""));
+    builder.append(""]"");
+    return builder.toString();
+  }",,
+"public void createKingdom(final KingdomFactory factory) {
+    setKing(factory.createKing());
+    setCastle(factory.createCastle());
+    setArmy(factory.createArmy());
+  }",0,
+"King getKing(final KingdomFactory factory) {
+    return factory.createKing();
+  }",0,
+"public King getKing() {
+    return king;
+  }",0,
+"public static KingdomFactory makeFactory(KingdomType type) {
+      switch (type) {
+        case ELF:
+          return new ElfKingdomFactory();
+        case ORC:
+          return new OrcKingdomFactory();
+        default:
+          throw new IllegalArgumentException(""KingdomType not supported."");
+      }
+    }",0,
+"public static void main(String[] args) {
+
+    var app = new App();
+
+    LOGGER.info(""Elf Kingdom"");
+    app.createKingdom(FactoryMaker.makeFactory(KingdomType.ELF));
+    LOGGER.info(app.getArmy().getDescription());
+    LOGGER.info(app.getCastle().getDescription());
+    LOGGER.info(app.getKing().getDescription());
+
+    LOGGER.info(""Orc Kingdom"");
+    app.createKingdom(FactoryMaker.makeFactory(KingdomType.ORC));
+    LOGGER.info(app.getArmy().getDescription());
+    LOGGER.info(app.getCastle().getDescription());
+    LOGGER.info(app.getKing().getDescription());
+  }",0,
+"public void setUp() {
+    elfFactory = FactoryMaker.makeFactory(KingdomType.ELF);
+    orcFactory = FactoryMaker.makeFactory(KingdomType.ORC);
+  }",0,
+"public void king() {
+    final var elfKing = app.getKing(elfFactory);
+    assertTrue(elfKing instanceof ElfKing);
+    assertEquals(ElfKing.DESCRIPTION, elfKing.getDescription());
+    final var orcKing = app.getKing(orcFactory);
+    assertTrue(orcKing instanceof OrcKing);
+    assertEquals(OrcKing.DESCRIPTION, orcKing.getDescription());
+  }",0,
+"public void castle() {
+    final var elfCastle = app.getCastle(elfFactory);
+    assertTrue(elfCastle instanceof ElfCastle);
+    assertEquals(ElfCastle.DESCRIPTION, elfCastle.getDescription());
+    final var orcCastle = app.getCastle(orcFactory);
+    assertTrue(orcCastle instanceof OrcCastle);
+    assertEquals(OrcCastle.DESCRIPTION, orcCastle.getDescription());
+  }",0,
+"public void army() {
+    final var elfArmy = app.getArmy(elfFactory);
+    assertTrue(elfArmy instanceof ElfArmy);
+    assertEquals(ElfArmy.DESCRIPTION, elfArmy.getDescription());
+    final var orcArmy = app.getArmy(orcFactory);
+    assertTrue(orcArmy instanceof OrcArmy);
+    assertEquals(OrcArmy.DESCRIPTION, orcArmy.getDescription());
+  }",0,
+"public void createElfKingdom() {
+    app.createKingdom(elfFactory);
+    final var king = app.getKing();
+    final var castle = app.getCastle();
+    final var army = app.getArmy();
+    assertTrue(king instanceof ElfKing);
+    assertEquals(ElfKing.DESCRIPTION, king.getDescription());
+    assertTrue(castle instanceof ElfCastle);
+    assertEquals(ElfCastle.DESCRIPTION, castle.getDescription());
+    assertTrue(army instanceof ElfArmy);
+    assertEquals(ElfArmy.DESCRIPTION, army.getDescription());
+  }",0,
+"public void createOrcKingdom() {
+    app.createKingdom(orcFactory);
+    final var king = app.getKing();
+    final var castle = app.getCastle();
+    final var army = app.getArmy();
+    assertTrue(king instanceof OrcKing);
+    assertEquals(OrcKing.DESCRIPTION, king.getDescription());
+    assertTrue(castle instanceof OrcCastle);
+    assertEquals(OrcCastle.DESCRIPTION, castle.getDescription());
+    assertTrue(army instanceof OrcArmy);
+    assertEquals(OrcArmy.DESCRIPTION, army.getDescription());
+  }",0,
+"public void test() {
+    App.main(new String[]{});
+  }",0,
+"public static void main(String[] args) {
+    var conUnix = new ConfigureForUnixVisitor();
+    var conDos = new ConfigureForDosVisitor();
+
+    var zoom = new Zoom();
+    var hayes = new Hayes();
+
+    hayes.accept(conDos); // Hayes modem with Dos configurator
+    zoom.accept(conDos); // Zoom modem with Dos configurator
+    hayes.accept(conUnix); // Hayes modem with Unix configurator
+    zoom.accept(conUnix); // Zoom modem with Unix configurator   
+  }",0,
+"public void visit(Hayes hayes) {
+    LOGGER.info(hayes + "" used with Dos configurator."");
+  }",0,
+"public void visit(Zoom zoom) {
+    LOGGER.info(zoom + "" used with Dos configurator."");
+  }",0,
+"public void accept(ModemVisitor modemVisitor) {
+    if (modemVisitor instanceof HayesVisitor) {
+      ((HayesVisitor) modemVisitor).visit(this);
+    } else {
+      LOGGER.info(""Only HayesVisitor is allowed to visit Hayes modem"");
+    }
+
+  }",0,
+"public void accept(ModemVisitor modemVisitor) {
+    if (modemVisitor instanceof ZoomVisitor) {
+      ((ZoomVisitor) modemVisitor).visit(this);
+    } else {
+      LOGGER.info(""Only ZoomVisitor is allowed to visit Zoom modem"");
+    }
+  }",0,
+"public void test() {
+    App.main(new String[]{});
+  }",0,
+"public void testVisitForZoom() {    
+    var conDos = new ConfigureForDosVisitor();
+    var zoom = new Zoom();
+    
+    conDos.visit(zoom);
+    
+    assertThat(logger.getLoggingEvents())
+        .extracting(""level"", ""message"")
+        .contains(tuple(INFO, zoom + "" used with Dos configurator.""));
+  ",0,
+"public void testVisitForHayes() {
+    var conDos = new ConfigureForDosVisitor();
+    var hayes = new Hayes();
+    
+    conDos.visit(hayes);
+    
+    assertThat(logger.getLoggingEvents())
+        .extracting(""level"", ""message"")
+        .contains(tuple(INFO, hayes + "" used with Dos configurator.""));
+  }",0,
