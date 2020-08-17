@@ -10768,3 +10768,177 @@ public class HelloWorld
     var numberOfInventories = inventoryController.getProductInventories();
     assertEquals(5, numberOfInventories);
   }",0,
+"public static void main(String[] args) {
+    var host1 = new Client();
+    var host2 = new Client();
+    host1.useService(12);
+    host2.useService(73);
+  }",0,
+"long useService(int value) {
+    var result = serviceAmbassador.doRemoteFunction(value);
+    LOGGER.info(""Service result: "" + result);
+    return result;
+  }",0,
+"static synchronized RemoteService getRemoteService() {
+    if (service == null) {
+      service = new RemoteService();
+    }
+    return service;
+  }",0,
+"public long doRemoteFunction(int value) {
+
+    long waitTime = (long) Math.floor(randomProvider.random() * 1000);
+
+    try {
+      sleep(waitTime);
+    } catch (InterruptedException e) {
+      LOGGER.error(""Thread sleep state interrupted"", e);
+    }
+    return waitTime <= THRESHOLD ? value * 10 : FAILURE;
+  }",0,
+"public long doRemoteFunction(int value) {
+    return safeCall(value);
+  }",0,
+"private long checkLatency(int value) {
+    var startTime = System.currentTimeMillis();
+    var result = RemoteService.getRemoteService().doRemoteFunction(value);
+    var timeTaken = System.currentTimeMillis() - startTime;
+
+    LOGGER.info(""Time taken (ms): "" + timeTaken);
+    return result;
+  }",0,
+"private long safeCall(int value) {
+    var retries = 0;
+    var result = (long) FAILURE;
+
+    for (int i = 0; i < RETRIES; i++) {
+      if (retries >= RETRIES) {
+        return FAILURE;
+      }
+
+      if ((result = checkLatency(value)) == FAILURE) {
+        LOGGER.info(""Failed to reach remote: ("" + (i + 1) + "")"");
+        retries++;
+        try {
+          sleep(DELAY_MS);
+        } catch (InterruptedException e) {
+          LOGGER.error(""Thread sleep state interrupted"", e);
+        }
+      } else {
+        break;
+      }
+    }
+    return result;
+  }",0,
+"void test() {
+    Client client = new Client();
+    var result = client.useService(10);
+
+    assertTrue(result == 100 || result == RemoteService.FAILURE);
+  }",0,
+"void testFailedCall() {
+    var remoteService = new RemoteService(new StaticRandomProvider(0.21));
+    var result = remoteService.doRemoteFunction(10);
+    assertEquals(RemoteServiceInterface.FAILURE, result);
+  }",0,
+"void testSuccessfulCall() {
+    var remoteService = new RemoteService(new StaticRandomProvider(0.2));
+    var result = remoteService.doRemoteFunction(10);
+    assertEquals(100, result);
+  }",0,
+"public DesktopProduct getProductDesktop() {
+    var desktopProduct = new DesktopProduct();
+    desktopProduct.setImagePath(imageClient.getImagePath());
+    desktopProduct.setPrice(priceClient.getPrice());
+    return desktopProduct;
+  }",0,
+"public MobileProduct getProductMobile() {
+    var mobileProduct = new MobileProduct();
+    mobileProduct.setPrice(priceClient.getPrice());
+    return mobileProduct;
+  }",0,
+" public String getImagePath() {
+    var httpClient = HttpClient.newHttpClient();
+    var httpGet = HttpRequest.newBuilder()
+        .GET()
+        .uri(URI.create(""http://localhost:50005/image-path""))
+        .build();
+
+    try {
+      LOGGER.info(""Sending request to fetch image path"");
+      var httpResponse = httpClient.send(httpGet, BodyHandlers.ofString());
+      logResponse(httpResponse);
+      return httpResponse.body();
+    } catch (IOException | InterruptedException e) {
+      LOGGER.error(""Failure occurred while getting image path"", e);
+    }
+
+    return null;
+  ",0,
+"private void logResponse(HttpResponse<String> httpResponse) {
+    if (isSuccessResponse(httpResponse.statusCode())) {
+      LOGGER.info(""Image path received successfully"");
+    } else {
+      LOGGER.warn(""Image path request failed"");
+    }
+  }",0,
+"public String getPrice() {
+    var httpClient = HttpClient.newHttpClient();
+    var httpGet = HttpRequest.newBuilder()
+        .GET()
+        .uri(URI.create(""http://localhost:50006/price""))
+        .build();
+
+    try {
+      LOGGER.info(""Sending request to fetch price info"");
+      var httpResponse = httpClient.send(httpGet, BodyHandlers.ofString());
+      logResponse(httpResponse);
+      return httpResponse.body();
+    } catch (IOException | InterruptedException e) {
+      LOGGER.error(""Failure occurred while getting price info"", e);
+    }
+
+    return null;",0,
+"private void logResponse(HttpResponse<String> httpResponse) {
+    if (isSuccessResponse(httpResponse.statusCode())) {
+      LOGGER.info(""Price info received successfully"");
+    } else {
+      LOGGER.warn(""Price info request failed"");
+    }
+  }",0,
+"public void testGetProductDesktop() {
+    var imagePath = ""/product-image.png"";
+    var price = ""20"";
+    when(imageClient.getImagePath()).thenReturn(imagePath);
+    when(priceClient.getPrice()).thenReturn(price);
+
+    var desktopProduct = apiGateway.getProductDesktop();
+
+    assertEquals(price, desktopProduct.getPrice());
+    assertEquals(imagePath, desktopProduct.getImagePath());
+  }",0,
+"public void testGetProductMobile() {
+    var price = ""20"";
+    when(priceClient.getPrice()).thenReturn(price);
+
+    var mobileProduct = apiGateway.getProductMobile();
+
+    assertEquals(price, mobileProduct.getPrice());
+  }",0,
+"public void testCash() {
+    //initialize
+    var cash = new Cash(3);
+    //test plus
+    cash.plus(4);
+    assertEquals(7, cash.count());
+    //test minus
+    cash = new Cash(8);
+    assertTrue(cash.minus(5));
+    assertEquals(3, cash.count());
+    assertFalse(cash.minus(6));
+    assertEquals(3, cash.count());
+    //test update
+    cash.plus(5);
+    assertTrue(cash.minus(5));
+    assertEquals(3, cash.count());
+  }",0,
