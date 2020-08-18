@@ -1,0 +1,1199 @@
+﻿codesample,labels,id
+"    static String replaceSubstitution(String base, Pattern from, String to, 
+                                      boolean repeat) {
+      Matcher match = from.matcher(base);
+      if (repeat) {
+        return match.replaceAll(to);
+      } else {
+        return match.replaceFirst(to);
+      }
+    }",1,641
+"		@Override
+		@NonNull
+		public MethodMetadata getFactoryMethodMetadata() {
+			return this.factoryMethodMetadata;
+		}",1,1509
+"        public CreateBudgetDetails build() {
+            CreateBudgetDetails __instance__ =
+                    new CreateBudgetDetails(
+                            compartmentId,
+                            targetCompartmentId,
+                            displayName,
+                            description,
+                            amount,
+                            resetPeriod,
+                            freeformTags,
+                            definedTags);
+            __instance__.__explicitlySet__.addAll(__explicitlySet__);
+            return __instance__;
+        }",1,3061
+"  public int getDVDTotalTitles()
+  {
+    if (bdp != null)
+      return bdp.getNumTitles();
+    return 0;
+  }",1,3199
+"  public List<String> getTraceback() {
+    return traceback;
+  }",1,3207
+"        @Override
+        public void onNodeSelected(TreeNodeElement<D> node, SignalEvent event) {
+          getSelectionModel().setTreeActive(true);
+          selectNode(node.getData(), event, true);
+        }",1,3213
+"  public void transformKeyReferences(RefTransformer visitor) {
+    configs.forEach(c -> c.transformKeyReferences(visitor));
+  }",1,3219
+"        public static void setResultSortOrder(ResultSortOrder resultSortOrder, HttpSession session) {
+            ContentSearchOptions contentSearchOptions = getContentSearchOptions(session);
+            contentSearchOptions.resultSortOrder = resultSortOrder;
+            contentSearchOptions.changed = true;
+        }",1,3247
+"    public static Class<?> getPropertyEditorClass(final Object bean, final String name)
+            throws IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException {
+
+
+        return PropertyUtilsBean.getInstance().getPropertyEditorClass(bean, name);
+
+
+    }",1,3845
+"    @Override
+    public ListenableFuture<Void> recover(QueueManagingVirtualHost<?> virtualHost)
+    {
+        EventLogger eventLogger = virtualHost.getEventLogger();
+        MessageStore store = virtualHost.getMessageStore();
+        MessageStore.MessageStoreReader storeReader = store.newMessageStoreReader();
+        MessageStoreLogSubject logSubject = new MessageStoreLogSubject(virtualHost.getName(), store.getClass().getSimpleName());
+
+
+        Map<Queue<?>, Integer> queueRecoveries = new TreeMap<>();
+        Map<Long, ServerMessage<?>> recoveredMessages = new HashMap<>();
+        Map<Long, StoredMessage<?>> unusedMessages = new TreeMap<>();
+        Map<UUID, Integer> unknownQueuesWithMessages = new HashMap<>();
+        Map<Queue<?>, Integer> queuesWithUnknownMessages = new HashMap<>();
+
+
+        eventLogger.message(logSubject, MessageStoreMessages.RECOVERY_START());
+
+
+        storeReader.visitMessages(new MessageVisitor(recoveredMessages, unusedMessages));
+
+
+        eventLogger.message(logSubject, TransactionLogMessages.RECOVERY_START(null, false));
+        try
+        {
+            storeReader.visitMessageInstances(new MessageInstanceVisitor(virtualHost,
+                                                                         store,
+                                                                         queueRecoveries,
+                                                                         recoveredMessages,
+                                                                         unusedMessages,
+                                                                         unknownQueuesWithMessages,
+                                                                         queuesWithUnknownMessages));
+        }
+        finally
+        {
+            if (!unknownQueuesWithMessages.isEmpty())
+            {
+                unknownQueuesWithMessages.forEach((queueId, count) -> {
+                    LOGGER.info(""Discarded {} entry(s) associated with queue id '{}' as a queue with this ""
+                                 + ""id does not appear in the configuration."",
+                                 count, queueId);
+                });
+            }
+            if (!queuesWithUnknownMessages.isEmpty())
+            {
+                queuesWithUnknownMessages.forEach((queue, count) -> {
+                    LOGGER.info(""Discarded {} entry(s) associated with queue '{}' as the referenced message ""
+                                 + ""does not exist."",
+                                 count, queue.getName());
+                });
+            }
+        }
+
+
+        for(Map.Entry<Queue<?>, Integer> entry : queueRecoveries.entrySet())
+        {
+            Queue<?> queue = entry.getKey();
+            Integer deliveredCount = entry.getValue();
+            eventLogger.message(logSubject, TransactionLogMessages.RECOVERED(deliveredCount, queue.getName()));
+            eventLogger.message(logSubject, TransactionLogMessages.RECOVERY_COMPLETE(queue.getName(), true));
+            queue.completeRecovery();
+        }
+
+
+        for (Queue<?> q : virtualHost.getChildren(Queue.class))
+        {
+            if (!queueRecoveries.containsKey(q))
+            {
+                q.completeRecovery();
+            }
+        }
+
+
+        storeReader.visitDistributedTransactions(new DistributedTransactionVisitor(virtualHost,
+                                                                                   eventLogger,
+                                                                                   logSubject, recoveredMessages, unusedMessages));
+
+
+        for(StoredMessage<?> m : unusedMessages.values())
+        {
+            LOGGER.debug(""Message id '{}' is orphaned, removing"", m.getMessageNumber());
+            m.remove();
+        }
+
+
+        if (unusedMessages.size() > 0)
+        {
+            LOGGER.info(""Discarded {} orphaned message(s)."", unusedMessages.size());
+        }
+
+
+        eventLogger.message(logSubject, TransactionLogMessages.RECOVERY_COMPLETE(null, false));
+
+
+        eventLogger.message(logSubject,
+                             MessageStoreMessages.RECOVERED(recoveredMessages.size() - unusedMessages.size()));
+        eventLogger.message(logSubject, MessageStoreMessages.RECOVERY_COMPLETE());
+
+
+        return Futures.immediateFuture(null);
+    }",1,4277
+"    private static long openProcessToken(int access) {
+        try {
+            return OpenProcessToken(GetCurrentProcess(), access);
+        } catch (WindowsException x) {
+            return 0L;
+        }
+    }",1,9351
+"    @Override
+    public State computeBreaks(CommentsHelper commentsHelper, int maxWidth, State state) {
+      text = commentsHelper.rewrite(tok, maxWidth, state.column);
+      int firstLineLength = text.length() - Iterators.getLast(Newlines.lineOffsetIterator(text));
+      return state.withColumn(state.column + firstLineLength);
+    }",1,10129
+"    @Override
+    public int setPath(Path2D path) {
+        Rectangle2D bounds = path.getBounds2D();
+        PathIterator it = path.getPathIterator(null);
+
+
+        List<byte[]> segInfo = new ArrayList<>();
+        List<Point2D.Double> pntInfo = new ArrayList<>();
+        boolean isClosed = false;
+        int numPoints = 0;
+        while (!it.isDone()) {
+            double[] vals = new double[6];
+            int type = it.currentSegment(vals);
+            switch (type) {
+                case PathIterator.SEG_MOVETO:
+                    pntInfo.add(new Point2D.Double(vals[0], vals[1]));
+                    segInfo.add(SEGMENTINFO_MOVETO);
+                    numPoints++;
+                    break;
+                case PathIterator.SEG_LINETO:
+                    pntInfo.add(new Point2D.Double(vals[0], vals[1]));
+                    segInfo.add(SEGMENTINFO_LINETO);
+                    segInfo.add(SEGMENTINFO_ESCAPE);
+                    numPoints++;
+                    break;
+                case PathIterator.SEG_CUBICTO:
+                    pntInfo.add(new Point2D.Double(vals[0], vals[1]));
+                    pntInfo.add(new Point2D.Double(vals[2], vals[3]));
+                    pntInfo.add(new Point2D.Double(vals[4], vals[5]));
+                    segInfo.add(SEGMENTINFO_CUBICTO);
+                    segInfo.add(SEGMENTINFO_ESCAPE2);
+                    numPoints++;
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    //TODO: figure out how to convert SEG_QUADTO into SEG_CUBICTO
+                    LOG.log(POILogger.WARN, ""SEG_QUADTO is not supported"");
+                    break;
+                case PathIterator.SEG_CLOSE:
+                    pntInfo.add(pntInfo.get(0));
+                    segInfo.add(SEGMENTINFO_LINETO);
+                    segInfo.add(SEGMENTINFO_ESCAPE);
+                    segInfo.add(SEGMENTINFO_LINETO);
+                    segInfo.add(SEGMENTINFO_CLOSE);
+                    isClosed = true;
+                    numPoints++;
+                    break;
+                default:
+                    LOG.log(POILogger.WARN, ""Ignoring invalid segment type ""+type);
+                    break;
+            }
+
+
+            it.next();
+        }
+        if(!isClosed) {
+            segInfo.add(SEGMENTINFO_LINETO);
+        }
+        segInfo.add(SEGMENTINFO_END);
+
+
+        AbstractEscherOptRecord opt = getEscherOptRecord();
+        opt.addEscherProperty(new EscherSimpleProperty(EscherProperties.GEOMETRY__SHAPEPATH, 0x4));
+
+
+        EscherArrayProperty verticesProp = new EscherArrayProperty((short)(EscherProperties.GEOMETRY__VERTICES + 0x4000), false, null);
+        verticesProp.setNumberOfElementsInArray(pntInfo.size());
+        verticesProp.setNumberOfElementsInMemory(pntInfo.size());
+        verticesProp.setSizeOfElements(8);
+        for (int i = 0; i < pntInfo.size(); i++) {
+            Point2D.Double pnt = pntInfo.get(i);
+            byte[] data = new byte[8];
+            LittleEndian.putInt(data, 0, Units.pointsToMaster(pnt.getX() - bounds.getX()));
+            LittleEndian.putInt(data, 4, Units.pointsToMaster(pnt.getY() - bounds.getY()));
+            verticesProp.setElement(i, data);
+        }
+        opt.addEscherProperty(verticesProp);
+
+
+        EscherArrayProperty segmentsProp = new EscherArrayProperty((short)(EscherProperties.GEOMETRY__SEGMENTINFO + 0x4000), false, null);
+        segmentsProp.setNumberOfElementsInArray(segInfo.size());
+        segmentsProp.setNumberOfElementsInMemory(segInfo.size());
+        segmentsProp.setSizeOfElements(0x2);
+        for (int i = 0; i < segInfo.size(); i++) {
+            byte[] seg = segInfo.get(i);
+            segmentsProp.setElement(i, seg);
+        }
+        opt.addEscherProperty(segmentsProp);
+
+
+        opt.addEscherProperty(new EscherSimpleProperty(EscherProperties.GEOMETRY__RIGHT, Units.pointsToMaster(bounds.getWidth())));
+        opt.addEscherProperty(new EscherSimpleProperty(EscherProperties.GEOMETRY__BOTTOM, Units.pointsToMaster(bounds.getHeight())));
+
+
+        opt.sortProperties();
+
+
+        setAnchor(bounds);
+
+
+        return numPoints;
+    }",1,10138
+"  protected void addRequiredAlertProperties(Set<String> properties) {
+    properties.add(AlertResourceProvider.ALERT_STATE);
+    properties.add(AlertResourceProvider.ALERT_ORIGINAL_TIMESTAMP);
+    properties.add(AlertResourceProvider.ALERT_MAINTENANCE_STATE);
+  }",1,10168
+"	public static Control createCustomAreaWithLink(final Composite parent, final Dialog dialog, final Binary binary) {
+		final String binaryLabel = binary.getLabel();
+		final String prefix = ""The requested operation cannot be performed due to invalid '"" + binaryLabel
+				+ ""' settings. Check your '"" + binaryLabel
+				+ ""' configuration and preferences under the corresponding "";
+		final String link = ""preference page"";
+		final String suffix = ""."";
+		final String text = prefix + link + suffix;
+
+
+		final Composite control = new Composite(parent, NONE);
+		control.setLayout(GridLayoutFactory.fillDefaults().create());
+		final GridData gridData = GridDataFactory.fillDefaults().align(LEFT, TOP).grab(true, true).create();
+		control.setLayoutData(gridData);
+
+
+		final StyleRange style = new StyleRange();
+		style.underline = true;
+		style.underlineStyle = UNDERLINE_LINK;
+
+
+		final StyledText styledText = new StyledText(control, MULTI | READ_ONLY | WRAP);
+		styledText.setWordWrap(true);
+		styledText.setJustify(true);
+		styledText.setText(text);
+		final GridData textGridData = GridDataFactory.fillDefaults().align(FILL, FILL).grab(true, true).create();
+		textGridData.widthHint = TEXT_WIDTH_HINT;
+		textGridData.heightHint = TEXT_HEIGHT_HINT;
+		styledText.setLayoutData(textGridData);
+
+
+		styledText.setEditable(false);
+		styledText.setBackground(UIUtils.getSystemColor(COLOR_WIDGET_BACKGROUND));
+		final int[] ranges = { text.indexOf(link), link.length() };
+		final StyleRange[] styles = { style };
+		styledText.setStyleRanges(ranges, styles);
+
+
+		styledText.addMouseListener(new MouseAdapter() {
+
+
+			@Override
+			public void mouseDown(final MouseEvent event) {
+				try {
+					final int offset = styledText.getOffsetAtPoint(new Point(event.x, event.y));
+					final StyleRange actualStyle = offset >= 0 ? styledText.getStyleRangeAtOffset(offset) : null;
+					if (null != actualStyle && actualStyle.underline
+							&& UNDERLINE_LINK == actualStyle.underlineStyle) {
+
+
+						dialog.close();
+						final PreferenceDialog preferenceDialog = createPreferenceDialogOn(
+								UIUtils.getShell(),
+								BinariesPreferencePage.ID,
+								FILTER_IDS,
+								null);
+
+
+						if (null != preferenceDialog) {
+							preferenceDialog.open();
+						}
+
+
+					}
+				} catch (final IllegalArgumentException e) {
+					// We are not over the actual text.
+				}
+			}
+
+
+		});
+
+
+		return control;
+	}",1,10310
+"    private ByteBuffer toByteBuffer(Serializable serializable) {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            new ObjectOutputStream(outputStream).writeObject(serializable);
+            return ByteBuffer.wrap(outputStream.toByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }",1,10590
+"    @Override
+    public void endAccess() {
+        super.endAccess() ;
+        if(manager instanceof ClusterManagerBase) {
+            ((ClusterManagerBase)manager).registerSessionAtReplicationValve(this);
+        }
+    }",1,10635
+"	@Override
+	protected String getGatewayClassName(Element element) {
+		return ((StringUtils.hasText(element.getAttribute(""marshaller""))) ?
+				MarshallingWebServiceOutboundGateway.class : SimpleWebServiceOutboundGateway.class).getName();
+	}",1,10683
+"    public SystemDiagnosticsDTO createSystemDiagnosticsDto(final SystemDiagnostics sysDiagnostics) {
+
+
+        final SystemDiagnosticsDTO dto = new SystemDiagnosticsDTO();
+        final SystemDiagnosticsSnapshotDTO snapshot = new SystemDiagnosticsSnapshotDTO();
+        dto.setAggregateSnapshot(snapshot);
+
+
+        snapshot.setStatsLastRefreshed(new Date(sysDiagnostics.getCreationTimestamp()));
+
+
+        // processors
+        snapshot.setAvailableProcessors(sysDiagnostics.getAvailableProcessors());
+        snapshot.setProcessorLoadAverage(sysDiagnostics.getProcessorLoadAverage());
+
+
+        // threads
+        snapshot.setDaemonThreads(sysDiagnostics.getDaemonThreads());
+        snapshot.setTotalThreads(sysDiagnostics.getTotalThreads());
+
+
+        // heap
+        snapshot.setMaxHeap(FormatUtils.formatDataSize(sysDiagnostics.getMaxHeap()));
+        snapshot.setMaxHeapBytes(sysDiagnostics.getMaxHeap());
+        snapshot.setTotalHeap(FormatUtils.formatDataSize(sysDiagnostics.getTotalHeap()));
+        snapshot.setTotalHeapBytes(sysDiagnostics.getTotalHeap());
+        snapshot.setUsedHeap(FormatUtils.formatDataSize(sysDiagnostics.getUsedHeap()));
+        snapshot.setUsedHeapBytes(sysDiagnostics.getUsedHeap());
+        snapshot.setFreeHeap(FormatUtils.formatDataSize(sysDiagnostics.getFreeHeap()));
+        snapshot.setFreeHeapBytes(sysDiagnostics.getFreeHeap());
+        if (sysDiagnostics.getHeapUtilization() != -1) {
+            snapshot.setHeapUtilization(FormatUtils.formatUtilization(sysDiagnostics.getHeapUtilization()));
+        }
+
+
+        // non heap
+        snapshot.setMaxNonHeap(FormatUtils.formatDataSize(sysDiagnostics.getMaxNonHeap()));
+        snapshot.setMaxNonHeapBytes(sysDiagnostics.getMaxNonHeap());
+        snapshot.setTotalNonHeap(FormatUtils.formatDataSize(sysDiagnostics.getTotalNonHeap()));
+        snapshot.setTotalNonHeapBytes(sysDiagnostics.getTotalNonHeap());
+        snapshot.setUsedNonHeap(FormatUtils.formatDataSize(sysDiagnostics.getUsedNonHeap()));
+        snapshot.setUsedNonHeapBytes(sysDiagnostics.getUsedNonHeap());
+        snapshot.setFreeNonHeap(FormatUtils.formatDataSize(sysDiagnostics.getFreeNonHeap()));
+        snapshot.setFreeNonHeapBytes(sysDiagnostics.getFreeNonHeap());
+        if (sysDiagnostics.getNonHeapUtilization() != -1) {
+            snapshot.setNonHeapUtilization(FormatUtils.formatUtilization(sysDiagnostics.getNonHeapUtilization()));
+        }
+
+
+        // flow file disk usage
+        final SystemDiagnosticsSnapshotDTO.StorageUsageDTO flowFileRepositoryStorageUsageDto = createStorageUsageDTO(null, sysDiagnostics.getFlowFileRepositoryStorageUsage());
+        snapshot.setFlowFileRepositoryStorageUsage(flowFileRepositoryStorageUsageDto);
+
+
+        // content disk usage
+        final Set<SystemDiagnosticsSnapshotDTO.StorageUsageDTO> contentRepositoryStorageUsageDtos = new LinkedHashSet<>();
+        snapshot.setContentRepositoryStorageUsage(contentRepositoryStorageUsageDtos);
+        for (final Map.Entry<String, StorageUsage> entry : sysDiagnostics.getContentRepositoryStorageUsage().entrySet()) {
+            contentRepositoryStorageUsageDtos.add(createStorageUsageDTO(entry.getKey(), entry.getValue()));
+        }
+
+
+        // provenance disk usage
+        final Set<SystemDiagnosticsSnapshotDTO.StorageUsageDTO> provenanceRepositoryStorageUsageDtos = new LinkedHashSet<>();
+        snapshot.setProvenanceRepositoryStorageUsage(provenanceRepositoryStorageUsageDtos);
+        for (final Map.Entry<String, StorageUsage> entry : sysDiagnostics.getProvenanceRepositoryStorageUsage().entrySet()) {
+            provenanceRepositoryStorageUsageDtos.add(createStorageUsageDTO(entry.getKey(), entry.getValue()));
+        }
+
+
+        // garbage collection
+        final Set<SystemDiagnosticsSnapshotDTO.GarbageCollectionDTO> garbageCollectionDtos = new LinkedHashSet<>();
+        snapshot.setGarbageCollection(garbageCollectionDtos);
+        for (final Map.Entry<String, GarbageCollection> entry : sysDiagnostics.getGarbageCollection().entrySet()) {
+            garbageCollectionDtos.add(createGarbageCollectionDTO(entry.getKey(), entry.getValue()));
+        }
+
+
+        // version info
+        final SystemDiagnosticsSnapshotDTO.VersionInfoDTO versionInfoDto = createVersionInfoDTO();
+        snapshot.setVersionInfo(versionInfoDto);
+
+
+        // uptime
+        snapshot.setUptime(FormatUtils.formatHoursMinutesSeconds(sysDiagnostics.getUptime(), TimeUnit.MILLISECONDS));
+
+
+        return dto;
+    }",1,12150
+"    public void validateDepositDetailForUpdate(final JsonElement element, final FromJsonHelper fromApiJsonHelper,
+            final DataValidatorBuilder baseDataValidator) {
+        if (fromApiJsonHelper.parameterExists(nameParamName, element)) {
+            final String name = fromApiJsonHelper.extractStringNamed(nameParamName, element);
+            baseDataValidator.reset().parameter(nameParamName).value(name).notBlank().notExceedingLengthOf(100);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(shortNameParamName, element)) {
+            final String shortName = fromApiJsonHelper.extractStringNamed(shortNameParamName, element);
+            baseDataValidator.reset().parameter(shortNameParamName).value(shortName).notBlank().notExceedingLengthOf(4);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(descriptionParamName, element)) {
+            final String description = fromApiJsonHelper.extractStringNamed(descriptionParamName, element);
+            baseDataValidator.reset().parameter(descriptionParamName).value(description).notBlank().notExceedingLengthOf(500);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(currencyCodeParamName, element)) {
+            final String currencyCode = fromApiJsonHelper.extractStringNamed(currencyCodeParamName, element);
+            baseDataValidator.reset().parameter(currencyCodeParamName).value(currencyCode).notBlank();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(digitsAfterDecimalParamName, element)) {
+            final Integer digitsAfterDecimal = fromApiJsonHelper.extractIntegerSansLocaleNamed(digitsAfterDecimalParamName, element);
+            baseDataValidator.reset().parameter(digitsAfterDecimalParamName).value(digitsAfterDecimal).notNull().inMinMaxRange(0, 6);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(inMultiplesOfParamName, element)) {
+            final Integer inMultiplesOf = fromApiJsonHelper.extractIntegerNamed(inMultiplesOfParamName, element, Locale.getDefault());
+            baseDataValidator.reset().parameter(inMultiplesOfParamName).value(inMultiplesOf).ignoreIfNull().integerZeroOrGreater();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(nominalAnnualInterestRateParamName, element)) {
+            final BigDecimal interestRate = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(nominalAnnualInterestRateParamName, element);
+            baseDataValidator.reset().parameter(nominalAnnualInterestRateParamName).value(interestRate).notNull().zeroOrPositiveAmount();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(interestCompoundingPeriodTypeParamName, element)) {
+            final Integer interestCompoundingPeriodType = fromApiJsonHelper.extractIntegerSansLocaleNamed(
+                    interestCompoundingPeriodTypeParamName, element);
+            baseDataValidator.reset().parameter(interestCompoundingPeriodTypeParamName).value(interestCompoundingPeriodType).notNull()
+                    .isOneOfTheseValues(SavingsCompoundingInterestPeriodType.integerValues());
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(interestCalculationTypeParamName, element)) {
+            final Integer interestCalculationType = fromApiJsonHelper.extractIntegerSansLocaleNamed(interestCalculationTypeParamName,
+                    element);
+            baseDataValidator.reset().parameter(interestCalculationTypeParamName).value(interestCalculationType).notNull()
+                    .inMinMaxRange(1, 2);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(interestCalculationDaysInYearTypeParamName, element)) {
+            final Integer interestCalculationDaysInYearType = fromApiJsonHelper.extractIntegerSansLocaleNamed(
+                    interestCalculationDaysInYearTypeParamName, element);
+            baseDataValidator.reset().parameter(interestCalculationDaysInYearTypeParamName).value(interestCalculationDaysInYearType)
+                    .notNull().isOneOfTheseValues(360, 365);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(minRequiredOpeningBalanceParamName, element)) {
+            final BigDecimal minOpeningBalance = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(minRequiredOpeningBalanceParamName,
+                    element);
+            baseDataValidator.reset().parameter(minRequiredOpeningBalanceParamName).value(minOpeningBalance).ignoreIfNull()
+                    .zeroOrPositiveAmount();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(lockinPeriodFrequencyParamName, element)) {
+            final Integer lockinPeriodFrequency = fromApiJsonHelper.extractIntegerWithLocaleNamed(lockinPeriodFrequencyParamName, element);
+            baseDataValidator.reset().parameter(lockinPeriodFrequencyParamName).value(lockinPeriodFrequency).ignoreIfNull()
+                    .integerZeroOrGreater();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(lockinPeriodFrequencyTypeParamName, element)) {
+            final Integer lockinPeriodFrequencyType = fromApiJsonHelper.extractIntegerSansLocaleNamed(lockinPeriodFrequencyTypeParamName,
+                    element);
+            baseDataValidator.reset().parameter(lockinPeriodFrequencyTypeParamName).value(lockinPeriodFrequencyType).inMinMaxRange(0, 3);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(withdrawalFeeForTransfersParamName, element)) {
+            final Boolean isWithdrawalFeeApplicableForTransfers = fromApiJsonHelper.extractBooleanNamed(withdrawalFeeForTransfersParamName,
+                    element);
+            baseDataValidator.reset().parameter(withdrawalFeeForTransfersParamName).value(isWithdrawalFeeApplicableForTransfers)
+                    .ignoreIfNull().validateForBooleanValue();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(feeAmountParamName, element)) {
+            final BigDecimal annualFeeAmount = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(feeAmountParamName, element);
+            baseDataValidator.reset().parameter(feeAmountParamName).value(annualFeeAmount).ignoreIfNull().zeroOrPositiveAmount();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(feeOnMonthDayParamName, element)) {
+            final MonthDay monthDayOfAnnualFee = fromApiJsonHelper.extractMonthDayNamed(feeOnMonthDayParamName, element);
+            baseDataValidator.reset().parameter(feeOnMonthDayParamName).value(monthDayOfAnnualFee).ignoreIfNull();
+        }
+
+
+        if (this.fromApiJsonHelper.parameterExists(minBalanceForInterestCalculationParamName, element)) {
+            final BigDecimal minBalanceForInterestCalculation = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(
+                    minBalanceForInterestCalculationParamName, element);
+            baseDataValidator.reset().parameter(minBalanceForInterestCalculationParamName).value(minBalanceForInterestCalculation)
+                    .ignoreIfNull().zeroOrPositiveAmount();
+        }
+
+
+        final Long savingsControlAccountId = fromApiJsonHelper.extractLongNamed(
+                SAVINGS_PRODUCT_ACCOUNTING_PARAMS.SAVINGS_CONTROL.getValue(), element);
+        baseDataValidator.reset().parameter(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.SAVINGS_CONTROL.getValue()).value(savingsControlAccountId)
+                .ignoreIfNull().integerGreaterThanZero();
+
+
+        final Long savingsReferenceAccountId = fromApiJsonHelper.extractLongNamed(
+                SAVINGS_PRODUCT_ACCOUNTING_PARAMS.SAVINGS_REFERENCE.getValue(), element);
+        baseDataValidator.reset().parameter(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.SAVINGS_REFERENCE.getValue())
+                .value(savingsReferenceAccountId).ignoreIfNull().integerGreaterThanZero();
+
+
+        final Long transfersInSuspenseAccountId = fromApiJsonHelper.extractLongNamed(
+                SAVINGS_PRODUCT_ACCOUNTING_PARAMS.TRANSFERS_SUSPENSE.getValue(), element);
+        baseDataValidator.reset().parameter(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.TRANSFERS_SUSPENSE.getValue())
+                .value(transfersInSuspenseAccountId).ignoreIfNull().integerGreaterThanZero();
+
+
+        final Long interestOnSavingsAccountId = fromApiJsonHelper.extractLongNamed(
+                SAVINGS_PRODUCT_ACCOUNTING_PARAMS.INTEREST_ON_SAVINGS.getValue(), element);
+        baseDataValidator.reset().parameter(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.INTEREST_ON_SAVINGS.getValue())
+                .value(interestOnSavingsAccountId).ignoreIfNull().integerGreaterThanZero();
+
+
+        final Long incomeFromFeeId = fromApiJsonHelper.extractLongNamed(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.INCOME_FROM_FEES.getValue(),
+                element);
+        baseDataValidator.reset().parameter(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.INCOME_FROM_FEES.getValue()).value(incomeFromFeeId)
+                .ignoreIfNull().integerGreaterThanZero();
+
+
+        final Long incomeFromPenaltyId = fromApiJsonHelper.extractLongNamed(
+                SAVINGS_PRODUCT_ACCOUNTING_PARAMS.INCOME_FROM_PENALTIES.getValue(), element);
+        baseDataValidator.reset().parameter(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.INCOME_FROM_PENALTIES.getValue()).value(incomeFromPenaltyId)
+                .ignoreIfNull().integerGreaterThanZero();
+
+
+        validatePaymentChannelFundSourceMappings(fromApiJsonHelper, baseDataValidator, element);
+        validateChargeToIncomeAccountMappings(fromApiJsonHelper, baseDataValidator, element);
+        validateTaxWithHoldingParams(baseDataValidator, element, false);
+    }",1,12754
+"    @SuppressWarnings(""try"")
+    private void doRun(Map<Method, CEntryPointData> entryPoints, Method mainEntryPoint,
+                    JavaMainSupport javaMainSupport, String imageName, AbstractBootImage.NativeImageKind k,
+                    SubstitutionProcessor harnessSubstitutions,
+                    ForkJoinPool compilationExecutor, ForkJoinPool analysisExecutor) {
+        List<HostedMethod> hostedEntryPoints = new ArrayList<>();
+
+
+        OptionValues options = HostedOptionValues.singleton();
+        SnippetReflectionProvider originalSnippetReflection = GraalAccess.getOriginalSnippetReflection();
+        try (DebugContext debug = DebugContext.create(options, new GraalDebugHandlersFactory(originalSnippetReflection))) {
+            setupNativeImage(imageName, options, entryPoints, javaMainSupport, harnessSubstitutions, analysisExecutor, originalSnippetReflection, debug);
+
+
+            boolean returnAfterAnalysis = runPointsToAnalysis(imageName, options, debug);
+            if (returnAfterAnalysis) {
+                return;
+            }
+
+
+            NativeImageHeap heap;
+            HostedMethod mainEntryPointHostedStub;
+            HostedMetaAccess hMetaAccess;
+            SharedRuntimeConfigurationBuilder runtime;
+            try (StopTimer t = new Timer(imageName, ""universe"").start()) {
+                hUniverse = new HostedUniverse(bigbang);
+                hMetaAccess = new HostedMetaAccess(hUniverse, bigbang.getMetaAccess());
+
+
+                new UniverseBuilder(aUniverse, bigbang.getMetaAccess(), hUniverse, hMetaAccess, HostedConfiguration.instance().createStaticAnalysisResultsBuilder(bigbang, hUniverse),
+                                bigbang.getUnsupportedFeatures()).build(debug);
+
+
+                runtime = new HostedRuntimeConfigurationBuilder(options, bigbang.getHostVM(), hUniverse, hMetaAccess, bigbang.getProviders()).build();
+                registerGraphBuilderPlugins(featureHandler, runtime.getRuntimeConfig(), (HostedProviders) runtime.getRuntimeConfig().getProviders(), bigbang.getMetaAccess(), aUniverse,
+                                hMetaAccess, hUniverse,
+                                nativeLibraries, loader, false, true, bigbang.getAnnotationSubstitutionProcessor(), new SubstrateClassInitializationPlugin((SVMHost) aUniverse.hostVM()),
+                                bigbang.getHostVM().getClassInitializationSupport());
+
+
+                if (NativeImageOptions.PrintUniverse.getValue()) {
+                    printTypes();
+                }
+
+
+                /* Find the entry point methods in the hosted world. */
+                for (AnalysisMethod m : aUniverse.getMethods()) {
+                    if (m.isEntryPoint()) {
+                        HostedMethod found = hUniverse.lookup(m);
+                        assert found != null;
+                        hostedEntryPoints.add(found);
+                    }
+                }
+                /* Find main entry point */
+                if (mainEntryPoint != null) {
+                    AnalysisMethod analysisStub = CEntryPointCallStubSupport.singleton().getStubForMethod(mainEntryPoint);
+                    mainEntryPointHostedStub = (HostedMethod) hMetaAccess.getUniverse().lookup(analysisStub);
+                    assert hostedEntryPoints.contains(mainEntryPointHostedStub);
+                } else {
+                    mainEntryPointHostedStub = null;
+                }
+                if (hostedEntryPoints.size() == 0) {
+                    throw UserError.abort(""Warning: no entry points found, i.e., no method annotated with @"" + CEntryPoint.class.getSimpleName());
+                }
+
+
+                heap = new NativeImageHeap(aUniverse, hUniverse, hMetaAccess);
+
+
+                BeforeCompilationAccessImpl config = new BeforeCompilationAccessImpl(featureHandler, loader, aUniverse, hUniverse, hMetaAccess, heap, debug);
+                featureHandler.forEachFeature(feature -> feature.beforeCompilation(config));
+
+
+                bigbang.getUnsupportedFeatures().report(bigbang);
+            } catch (UnsupportedFeatureException ufe) {
+                throw UserError.abort(ufe.getMessage());
+            }
+
+
+            recordMethodsWithStackValues();
+            recordRestrictHeapAccessCallees(aUniverse.getMethods());
+
+
+            /*
+             * After this point, all TypeFlow (and therefore also TypeState) objects are unreachable
+             * and can be garbage collected. This is important to keep the overall memory footprint
+             * low. However, this also means we no longer have complete call chain information. Only
+             * the summarized information stored in the StaticAnalysisResult objects is available
+             * after this point.
+             */
+            bigbang.cleanupAfterAnalysis();
+
+
+            NativeImageCodeCache codeCache;
+            CompileQueue compileQueue;
+            try (StopTimer t = new Timer(imageName, ""compile"").start()) {
+                compileQueue = HostedConfiguration.instance().createCompileQueue(debug, featureHandler, hUniverse, runtime, DeoptTester.enabled(), bigbang.getProviders().getSnippetReflection(),
+                                compilationExecutor);
+                compileQueue.finish(debug);
+
+
+                /* release memory taken by graphs for the image writing */
+                hUniverse.getMethods().forEach(HostedMethod::clear);
+
+
+                codeCache = NativeImageCodeCacheFactory.get().newCodeCache(compileQueue, heap);
+                codeCache.layoutConstants();
+                codeCache.layoutMethods(debug, imageName);
+
+
+                AfterCompilationAccessImpl config = new AfterCompilationAccessImpl(featureHandler, loader, aUniverse, hUniverse, hMetaAccess, heap, debug);
+                featureHandler.forEachFeature(feature -> feature.afterCompilation(config));
+            }
+
+
+            try (Indent indent = debug.logAndIndent(""create native image"")) {
+                try (DebugContext.Scope buildScope = debug.scope(""CreateBootImage"")) {
+                    try (StopTimer t = new Timer(imageName, ""image"").start()) {
+
+
+                        // Start building the model of the native image heap.
+                        heap.addInitialObjects();
+                        // Then build the model of the code cache, which can
+                        // add objects to the native image heap.
+                        codeCache.addConstantsToHeap();
+                        // Finish building the model of the native image heap.
+                        heap.addTrailingObjects();
+
+
+                        AfterHeapLayoutAccessImpl config = new AfterHeapLayoutAccessImpl(featureHandler, loader, hMetaAccess, debug);
+                        featureHandler.forEachFeature(feature -> feature.afterHeapLayout(config));
+
+
+                        this.image = AbstractBootImage.create(k, hUniverse, hMetaAccess, nativeLibraries, heap, codeCache, hostedEntryPoints, mainEntryPointHostedStub, loader.getClassLoader());
+                        image.build(debug);
+                        if (NativeImageOptions.PrintUniverse.getValue()) {
+                            /*
+                             * This debug output must be printed _after_ and not _during_ image
+                             * building, because it adds some PrintStream objects to static fields,
+                             * which disrupts the heap.
+                             */
+                            codeCache.printCompilationResults();
+                        }
+                    }
+                }
+            }
+
+
+            BeforeImageWriteAccessImpl beforeConfig = new BeforeImageWriteAccessImpl(featureHandler, loader, imageName, image,
+                            runtime.getRuntimeConfig(), aUniverse, hUniverse, optionProvider, hMetaAccess, debug);
+            featureHandler.forEachFeature(feature -> feature.beforeImageWrite(beforeConfig));
+
+
+            try (StopTimer t = new Timer(imageName, ""write"").start()) {
+                /*
+                 * This will write the debug info too -- i.e. we may be writing more than one file,
+                 * if the debug info is in a separate file. We need to push writing the file to the
+                 * image implementation, because whether the debug info and image share a file or
+                 * not is an implementation detail of the image.
+                 */
+                Path tmpDir = tempDirectory();
+                Path imagePath = image.write(debug, generatedFiles(HostedOptionValues.singleton()), tmpDir, imageName, beforeConfig).getOutputFile();
+
+
+                AfterImageWriteAccessImpl afterConfig = new AfterImageWriteAccessImpl(featureHandler, loader, hUniverse, imagePath, tmpDir, image.getBootImageKind(), debug);
+                featureHandler.forEachFeature(feature -> feature.afterImageWrite(afterConfig));
+            }
+        }
+    }",1,12783
+"    public void validateDepositDetailForUpdate(final JsonElement element, final FromJsonHelper fromApiJsonHelper,
+            final DataValidatorBuilder baseDataValidator) {
+        if (fromApiJsonHelper.parameterExists(nameParamName, element)) {
+            final String name = fromApiJsonHelper.extractStringNamed(nameParamName, element);
+            baseDataValidator.reset().parameter(nameParamName).value(name).notBlank().notExceedingLengthOf(100);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(shortNameParamName, element)) {
+            final String shortName = fromApiJsonHelper.extractStringNamed(shortNameParamName, element);
+            baseDataValidator.reset().parameter(shortNameParamName).value(shortName).notBlank().notExceedingLengthOf(4);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(descriptionParamName, element)) {
+            final String description = fromApiJsonHelper.extractStringNamed(descriptionParamName, element);
+            baseDataValidator.reset().parameter(descriptionParamName).value(description).notBlank().notExceedingLengthOf(500);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(currencyCodeParamName, element)) {
+            final String currencyCode = fromApiJsonHelper.extractStringNamed(currencyCodeParamName, element);
+            baseDataValidator.reset().parameter(currencyCodeParamName).value(currencyCode).notBlank();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(digitsAfterDecimalParamName, element)) {
+            final Integer digitsAfterDecimal = fromApiJsonHelper.extractIntegerSansLocaleNamed(digitsAfterDecimalParamName, element);
+            baseDataValidator.reset().parameter(digitsAfterDecimalParamName).value(digitsAfterDecimal).notNull().inMinMaxRange(0, 6);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(inMultiplesOfParamName, element)) {
+            final Integer inMultiplesOf = fromApiJsonHelper.extractIntegerNamed(inMultiplesOfParamName, element, Locale.getDefault());
+            baseDataValidator.reset().parameter(inMultiplesOfParamName).value(inMultiplesOf).ignoreIfNull().integerZeroOrGreater();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(nominalAnnualInterestRateParamName, element)) {
+            final BigDecimal interestRate = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(nominalAnnualInterestRateParamName, element);
+            baseDataValidator.reset().parameter(nominalAnnualInterestRateParamName).value(interestRate).notNull().zeroOrPositiveAmount();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(interestCompoundingPeriodTypeParamName, element)) {
+            final Integer interestCompoundingPeriodType = fromApiJsonHelper.extractIntegerSansLocaleNamed(
+                    interestCompoundingPeriodTypeParamName, element);
+            baseDataValidator.reset().parameter(interestCompoundingPeriodTypeParamName).value(interestCompoundingPeriodType).notNull()
+                    .isOneOfTheseValues(SavingsCompoundingInterestPeriodType.integerValues());
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(interestCalculationTypeParamName, element)) {
+            final Integer interestCalculationType = fromApiJsonHelper.extractIntegerSansLocaleNamed(interestCalculationTypeParamName,
+                    element);
+            baseDataValidator.reset().parameter(interestCalculationTypeParamName).value(interestCalculationType).notNull()
+                    .inMinMaxRange(1, 2);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(interestCalculationDaysInYearTypeParamName, element)) {
+            final Integer interestCalculationDaysInYearType = fromApiJsonHelper.extractIntegerSansLocaleNamed(
+                    interestCalculationDaysInYearTypeParamName, element);
+            baseDataValidator.reset().parameter(interestCalculationDaysInYearTypeParamName).value(interestCalculationDaysInYearType)
+                    .notNull().isOneOfTheseValues(360, 365);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(minRequiredOpeningBalanceParamName, element)) {
+            final BigDecimal minOpeningBalance = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(minRequiredOpeningBalanceParamName,
+                    element);
+            baseDataValidator.reset().parameter(minRequiredOpeningBalanceParamName).value(minOpeningBalance).ignoreIfNull()
+                    .zeroOrPositiveAmount();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(lockinPeriodFrequencyParamName, element)) {
+            final Integer lockinPeriodFrequency = fromApiJsonHelper.extractIntegerWithLocaleNamed(lockinPeriodFrequencyParamName, element);
+            baseDataValidator.reset().parameter(lockinPeriodFrequencyParamName).value(lockinPeriodFrequency).ignoreIfNull()
+                    .integerZeroOrGreater();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(lockinPeriodFrequencyTypeParamName, element)) {
+            final Integer lockinPeriodFrequencyType = fromApiJsonHelper.extractIntegerSansLocaleNamed(lockinPeriodFrequencyTypeParamName,
+                    element);
+            baseDataValidator.reset().parameter(lockinPeriodFrequencyTypeParamName).value(lockinPeriodFrequencyType).inMinMaxRange(0, 3);
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(withdrawalFeeForTransfersParamName, element)) {
+            final Boolean isWithdrawalFeeApplicableForTransfers = fromApiJsonHelper.extractBooleanNamed(withdrawalFeeForTransfersParamName,
+                    element);
+            baseDataValidator.reset().parameter(withdrawalFeeForTransfersParamName).value(isWithdrawalFeeApplicableForTransfers)
+                    .ignoreIfNull().validateForBooleanValue();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(feeAmountParamName, element)) {
+            final BigDecimal annualFeeAmount = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(feeAmountParamName, element);
+            baseDataValidator.reset().parameter(feeAmountParamName).value(annualFeeAmount).ignoreIfNull().zeroOrPositiveAmount();
+        }
+
+
+        if (fromApiJsonHelper.parameterExists(feeOnMonthDayParamName, element)) {
+            final MonthDay monthDayOfAnnualFee = fromApiJsonHelper.extractMonthDayNamed(feeOnMonthDayParamName, element);
+            baseDataValidator.reset().parameter(feeOnMonthDayParamName).value(monthDayOfAnnualFee).ignoreIfNull();
+        }
+
+
+        if (this.fromApiJsonHelper.parameterExists(minBalanceForInterestCalculationParamName, element)) {
+            final BigDecimal minBalanceForInterestCalculation = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(
+                    minBalanceForInterestCalculationParamName, element);
+            baseDataValidator.reset().parameter(minBalanceForInterestCalculationParamName).value(minBalanceForInterestCalculation)
+                    .ignoreIfNull().zeroOrPositiveAmount();
+        }
+
+
+        final Long savingsControlAccountId = fromApiJsonHelper.extractLongNamed(
+                SAVINGS_PRODUCT_ACCOUNTING_PARAMS.SAVINGS_CONTROL.getValue(), element);
+        baseDataValidator.reset().parameter(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.SAVINGS_CONTROL.getValue()).value(savingsControlAccountId)
+                .ignoreIfNull().integerGreaterThanZero();
+
+
+        final Long savingsReferenceAccountId = fromApiJsonHelper.extractLongNamed(
+                SAVINGS_PRODUCT_ACCOUNTING_PARAMS.SAVINGS_REFERENCE.getValue(), element);
+        baseDataValidator.reset().parameter(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.SAVINGS_REFERENCE.getValue())
+                .value(savingsReferenceAccountId).ignoreIfNull().integerGreaterThanZero();
+
+
+        final Long transfersInSuspenseAccountId = fromApiJsonHelper.extractLongNamed(
+                SAVINGS_PRODUCT_ACCOUNTING_PARAMS.TRANSFERS_SUSPENSE.getValue(), element);
+        baseDataValidator.reset().parameter(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.TRANSFERS_SUSPENSE.getValue())
+                .value(transfersInSuspenseAccountId).ignoreIfNull().integerGreaterThanZero();
+
+
+        final Long interestOnSavingsAccountId = fromApiJsonHelper.extractLongNamed(
+                SAVINGS_PRODUCT_ACCOUNTING_PARAMS.INTEREST_ON_SAVINGS.getValue(), element);
+        baseDataValidator.reset().parameter(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.INTEREST_ON_SAVINGS.getValue())
+                .value(interestOnSavingsAccountId).ignoreIfNull().integerGreaterThanZero();
+
+
+        final Long incomeFromFeeId = fromApiJsonHelper.extractLongNamed(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.INCOME_FROM_FEES.getValue(),
+                element);
+        baseDataValidator.reset().parameter(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.INCOME_FROM_FEES.getValue()).value(incomeFromFeeId)
+                .ignoreIfNull().integerGreaterThanZero();
+
+
+        final Long incomeFromPenaltyId = fromApiJsonHelper.extractLongNamed(
+                SAVINGS_PRODUCT_ACCOUNTING_PARAMS.INCOME_FROM_PENALTIES.getValue(), element);
+        baseDataValidator.reset().parameter(SAVINGS_PRODUCT_ACCOUNTING_PARAMS.INCOME_FROM_PENALTIES.getValue()).value(incomeFromPenaltyId)
+                .ignoreIfNull().integerGreaterThanZero();
+
+
+        validatePaymentChannelFundSourceMappings(fromApiJsonHelper, baseDataValidator, element);
+        validateChargeToIncomeAccountMappings(fromApiJsonHelper, baseDataValidator, element);
+        validateTaxWithHoldingParams(baseDataValidator, element, false);
+    }",1,14667
+"    @Override
+    public ILSMIndex createInstance(INCServiceContext serviceCtx) throws HyracksDataException {
+        IIOManager ioManager = serviceCtx.getIoManager();
+        FileReference file = ioManager.resolve(path);
+        List<IVirtualBufferCache> virtualBufferCaches = vbcProvider.getVirtualBufferCaches(serviceCtx, file);
+        ioOpCallbackFactory.initialize(serviceCtx, this);
+        return LSMRTreeUtils.createLSMTreeWithAntiMatterTuples(ioManager, virtualBufferCaches, file,
+                storageManager.getBufferCache(serviceCtx), typeTraits, cmpFactories, btreeCmpFactories,
+                valueProviderFactories, rtreePolicyType,
+                mergePolicyFactory.createMergePolicy(mergePolicyProperties, serviceCtx),
+                opTrackerProvider.getOperationTracker(serviceCtx, this), ioSchedulerProvider.getIoScheduler(serviceCtx),
+                ioOpCallbackFactory, linearizeCmpFactory, rtreeFields, filterTypeTraits, filterCmpFactories,
+                filterFields, durable, isPointMBR, metadataPageManagerFactory);
+    }",1,15311
+"public String getProductTitle() {
+    var request = HttpRequest.newBuilder()
+        .GET()
+        .uri(URI.create(""http://localhost:51515/information""))
+        .build();
+    var client = HttpClient.newHttpClient();
+    try {
+      var httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
+      return httpResponse.body();
+    } catch (IOException ioe) {
+      LOGGER.error(""IOException Occurred"", ioe);
+    } catch (InterruptedException ie) {
+      LOGGER.error(""InterruptedException Occurred"", ie);
+    }
+    return null;
+  }
+}",0,
+"public Integer getProductInventories() {
+    var response = """";
+
+    var request = HttpRequest.newBuilder()
+        .GET()
+        .uri(URI.create(""http://localhost:51516/inventories""))
+        .build();
+    var client = HttpClient.newHttpClient();
+    try {
+      var httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
+      response = httpResponse.body();
+    } catch (IOException ioe) {
+      LOGGER.error(""IOException Occurred"", ioe);
+    } catch (InterruptedException ie) {
+      LOGGER.error(""InterruptedException Occurred"", ie);
+    }
+    if ("""".equalsIgnoreCase(response)) {
+      return null;
+    } else {
+      return Integer.parseInt(response);
+    }
+  }",0,
+"public void testGetProduct() {
+    var title = ""The Product Title."";
+    var inventories = 5;
+
+    when(informationClient.getProductTitle()).thenReturn(title);
+    when(inventoryClient.getProductInventories()).thenReturn(inventories);
+
+    var testProduct = aggregator.getProduct();
+
+    assertEquals(title, testProduct.getTitle());
+    assertEquals(inventories, testProduct.getProductInventories());
+  }",0,
+"public void shouldGetProductTitle() {
+    var infoController = new InformationController();
+    var title = infoController.getProductTitle();
+    assertEquals(""The Product Title."", title);
+  }",0,
+"public void testGetProductInventories() {
+    var inventoryController = new InventoryController();
+    var numberOfInventories = inventoryController.getProductInventories();
+    assertEquals(5, numberOfInventories);
+  }",0,
+"public static void main(String[] args) {
+    var host1 = new Client();
+    var host2 = new Client();
+    host1.useService(12);
+    host2.useService(73);
+  }",0,
+"long useService(int value) {
+    var result = serviceAmbassador.doRemoteFunction(value);
+    LOGGER.info(""Service result: "" + result);
+    return result;
+  }",0,
+"static synchronized RemoteService getRemoteService() {
+    if (service == null) {
+      service = new RemoteService();
+    }
+    return service;
+  }",0,
+"public long doRemoteFunction(int value) {
+
+    long waitTime = (long) Math.floor(randomProvider.random() * 1000);
+
+    try {
+      sleep(waitTime);
+    } catch (InterruptedException e) {
+      LOGGER.error(""Thread sleep state interrupted"", e);
+    }
+    return waitTime <= THRESHOLD ? value * 10 : FAILURE;
+  }",0,
+"public long doRemoteFunction(int value) {
+    return safeCall(value);
+  }",0,
+"private long checkLatency(int value) {
+    var startTime = System.currentTimeMillis();
+    var result = RemoteService.getRemoteService().doRemoteFunction(value);
+    var timeTaken = System.currentTimeMillis() - startTime;
+
+    LOGGER.info(""Time taken (ms): "" + timeTaken);
+    return result;
+  }",0,
+"private long safeCall(int value) {
+    var retries = 0;
+    var result = (long) FAILURE;
+
+    for (int i = 0; i < RETRIES; i++) {
+      if (retries >= RETRIES) {
+        return FAILURE;
+      }
+
+      if ((result = checkLatency(value)) == FAILURE) {
+        LOGGER.info(""Failed to reach remote: ("" + (i + 1) + "")"");
+        retries++;
+        try {
+          sleep(DELAY_MS);
+        } catch (InterruptedException e) {
+          LOGGER.error(""Thread sleep state interrupted"", e);
+        }
+      } else {
+        break;
+      }
+    }
+    return result;
+  }",0,
+"void test() {
+    Client client = new Client();
+    var result = client.useService(10);
+
+    assertTrue(result == 100 || result == RemoteService.FAILURE);
+  }",0,
+"void testFailedCall() {
+    var remoteService = new RemoteService(new StaticRandomProvider(0.21));
+    var result = remoteService.doRemoteFunction(10);
+    assertEquals(RemoteServiceInterface.FAILURE, result);
+  }",0,
+"void testSuccessfulCall() {
+    var remoteService = new RemoteService(new StaticRandomProvider(0.2));
+    var result = remoteService.doRemoteFunction(10);
+    assertEquals(100, result);
+  }",0,
+"public DesktopProduct getProductDesktop() {
+    var desktopProduct = new DesktopProduct();
+    desktopProduct.setImagePath(imageClient.getImagePath());
+    desktopProduct.setPrice(priceClient.getPrice());
+    return desktopProduct;
+  }",0,
+"public MobileProduct getProductMobile() {
+    var mobileProduct = new MobileProduct();
+    mobileProduct.setPrice(priceClient.getPrice());
+    return mobileProduct;
+  }",0,
+" public String getImagePath() {
+    var httpClient = HttpClient.newHttpClient();
+    var httpGet = HttpRequest.newBuilder()
+        .GET()
+        .uri(URI.create(""http://localhost:50005/image-path""))
+        .build();
+
+    try {
+      LOGGER.info(""Sending request to fetch image path"");
+      var httpResponse = httpClient.send(httpGet, BodyHandlers.ofString());
+      logResponse(httpResponse);
+      return httpResponse.body();
+    } catch (IOException | InterruptedException e) {
+      LOGGER.error(""Failure occurred while getting image path"", e);
+    }
+
+    return null;
+  ",0,
+"private void logResponse(HttpResponse<String> httpResponse) {
+    if (isSuccessResponse(httpResponse.statusCode())) {
+      LOGGER.info(""Image path received successfully"");
+    } else {
+      LOGGER.warn(""Image path request failed"");
+    }
+  }",0,
+"public String getPrice() {
+    var httpClient = HttpClient.newHttpClient();
+    var httpGet = HttpRequest.newBuilder()
+        .GET()
+        .uri(URI.create(""http://localhost:50006/price""))
+        .build();
+
+    try {
+      LOGGER.info(""Sending request to fetch price info"");
+      var httpResponse = httpClient.send(httpGet, BodyHandlers.ofString());
+      logResponse(httpResponse);
+      return httpResponse.body();
+    } catch (IOException | InterruptedException e) {
+      LOGGER.error(""Failure occurred while getting price info"", e);
+    }
+
+    return null;",0,
+"private void logResponse(HttpResponse<String> httpResponse) {
+    if (isSuccessResponse(httpResponse.statusCode())) {
+      LOGGER.info(""Price info received successfully"");
+    } else {
+      LOGGER.warn(""Price info request failed"");
+    }
+  }",0,
+"public void testGetProductDesktop() {
+    var imagePath = ""/product-image.png"";
+    var price = ""20"";
+    when(imageClient.getImagePath()).thenReturn(imagePath);
+    when(priceClient.getPrice()).thenReturn(price);
+
+    var desktopProduct = apiGateway.getProductDesktop();
+
+    assertEquals(price, desktopProduct.getPrice());
+    assertEquals(imagePath, desktopProduct.getImagePath());
+  }",0,
+"public void testGetProductMobile() {
+    var price = ""20"";
+    when(priceClient.getPrice()).thenReturn(price);
+
+    var mobileProduct = apiGateway.getProductMobile();
+
+    assertEquals(price, mobileProduct.getPrice());
+  }",0,
+"public void testCash() {
+    //initialize
+    var cash = new Cash(3);
+    //test plus
+    cash.plus(4);
+    assertEquals(7, cash.count());
+    //test minus
+    cash = new Cash(8);
+    assertTrue(cash.minus(5));
+    assertEquals(3, cash.count());
+    assertFalse(cash.minus(6));
+    assertEquals(3, cash.count());
+    //test update
+    cash.plus(5);
+    assertTrue(cash.minus(5));
+    assertEquals(3, cash.count());
+  }",0,
